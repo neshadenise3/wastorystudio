@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UploadsRouteImport } from './routes/uploads'
 import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as LocationsRouteImport } from './routes/locations'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as ImportReviewRouteImport } from './routes/import-review'
 import { Route as HubRouteImport } from './routes/hub'
@@ -31,6 +32,11 @@ const TimelineRoute = TimelineRouteImport.update({
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocationsRoute = LocationsRouteImport.update({
+  id: '/locations',
+  path: '/locations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InboxRoute = InboxRouteImport.update({
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/hub': typeof HubRoute
   '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
+  '/locations': typeof LocationsRoute
   '/projects': typeof ProjectsRoute
   '/timeline': typeof TimelineRoute
   '/uploads': typeof UploadsRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/hub': typeof HubRoute
   '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
+  '/locations': typeof LocationsRoute
   '/projects': typeof ProjectsRoute
   '/timeline': typeof TimelineRoute
   '/uploads': typeof UploadsRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/hub': typeof HubRoute
   '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
+  '/locations': typeof LocationsRoute
   '/projects': typeof ProjectsRoute
   '/timeline': typeof TimelineRoute
   '/uploads': typeof UploadsRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/hub'
     | '/import-review'
     | '/inbox'
+    | '/locations'
     | '/projects'
     | '/timeline'
     | '/uploads'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/hub'
     | '/import-review'
     | '/inbox'
+    | '/locations'
     | '/projects'
     | '/timeline'
     | '/uploads'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/hub'
     | '/import-review'
     | '/inbox'
+    | '/locations'
     | '/projects'
     | '/timeline'
     | '/uploads'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   HubRoute: typeof HubRoute
   ImportReviewRoute: typeof ImportReviewRoute
   InboxRoute: typeof InboxRoute
+  LocationsRoute: typeof LocationsRoute
   ProjectsRoute: typeof ProjectsRoute
   TimelineRoute: typeof TimelineRoute
   UploadsRoute: typeof UploadsRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/locations': {
+      id: '/locations'
+      path: '/locations'
+      fullPath: '/locations'
+      preLoaderRoute: typeof LocationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inbox': {
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   HubRoute: HubRoute,
   ImportReviewRoute: ImportReviewRoute,
   InboxRoute: InboxRoute,
+  LocationsRoute: LocationsRoute,
   ProjectsRoute: ProjectsRoute,
   TimelineRoute: TimelineRoute,
   UploadsRoute: UploadsRoute,
