@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UploadsRouteImport } from './routes/uploads'
+import { Route as TrashRouteImport } from './routes/trash'
 import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as PathwaysRouteImport } from './routes/pathways'
@@ -26,6 +27,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const UploadsRoute = UploadsRouteImport.update({
   id: '/uploads',
   path: '/uploads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrashRoute = TrashRouteImport.update({
+  id: '/trash',
+  path: '/trash',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TimelineRoute = TimelineRouteImport.update({
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/pathways': typeof PathwaysRoute
   '/projects': typeof ProjectsRoute
   '/timeline': typeof TimelineRoute
+  '/trash': typeof TrashRoute
   '/uploads': typeof UploadsRoute
 }
 export interface FileRoutesByTo {
@@ -117,6 +124,7 @@ export interface FileRoutesByTo {
   '/pathways': typeof PathwaysRoute
   '/projects': typeof ProjectsRoute
   '/timeline': typeof TimelineRoute
+  '/trash': typeof TrashRoute
   '/uploads': typeof UploadsRoute
 }
 export interface FileRoutesById {
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/pathways': typeof PathwaysRoute
   '/projects': typeof ProjectsRoute
   '/timeline': typeof TimelineRoute
+  '/trash': typeof TrashRoute
   '/uploads': typeof UploadsRoute
 }
 export interface FileRouteTypes {
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/pathways'
     | '/projects'
     | '/timeline'
+    | '/trash'
     | '/uploads'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/pathways'
     | '/projects'
     | '/timeline'
+    | '/trash'
     | '/uploads'
   id:
     | '__root__'
@@ -180,6 +191,7 @@ export interface FileRouteTypes {
     | '/pathways'
     | '/projects'
     | '/timeline'
+    | '/trash'
     | '/uploads'
   fileRoutesById: FileRoutesById
 }
@@ -196,6 +208,7 @@ export interface RootRouteChildren {
   PathwaysRoute: typeof PathwaysRoute
   ProjectsRoute: typeof ProjectsRoute
   TimelineRoute: typeof TimelineRoute
+  TrashRoute: typeof TrashRoute
   UploadsRoute: typeof UploadsRoute
 }
 
@@ -206,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/uploads'
       fullPath: '/uploads'
       preLoaderRoute: typeof UploadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trash': {
+      id: '/trash'
+      path: '/trash'
+      fullPath: '/trash'
+      preLoaderRoute: typeof TrashRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/timeline': {
@@ -308,6 +328,7 @@ const rootRouteChildren: RootRouteChildren = {
   PathwaysRoute: PathwaysRoute,
   ProjectsRoute: ProjectsRoute,
   TimelineRoute: TimelineRoute,
+  TrashRoute: TrashRoute,
   UploadsRoute: UploadsRoute,
 }
 export const routeTree = rootRouteImport
