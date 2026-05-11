@@ -16,6 +16,7 @@ import { Route as LocationsRouteImport } from './routes/locations'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as ImportReviewRouteImport } from './routes/import-review'
 import { Route as HubRouteImport } from './routes/hub'
+import { Route as GlossaryRouteImport } from './routes/glossary'
 import { Route as FactionsRouteImport } from './routes/factions'
 import { Route as CharactersRouteImport } from './routes/characters'
 import { Route as IndexRouteImport } from './routes/index'
@@ -55,6 +56,11 @@ const HubRoute = HubRouteImport.update({
   path: '/hub',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GlossaryRoute = GlossaryRouteImport.update({
+  id: '/glossary',
+  path: '/glossary',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FactionsRoute = FactionsRouteImport.update({
   id: '/factions',
   path: '/factions',
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/characters': typeof CharactersRoute
   '/factions': typeof FactionsRoute
+  '/glossary': typeof GlossaryRoute
   '/hub': typeof HubRoute
   '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/characters': typeof CharactersRoute
   '/factions': typeof FactionsRoute
+  '/glossary': typeof GlossaryRoute
   '/hub': typeof HubRoute
   '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/characters': typeof CharactersRoute
   '/factions': typeof FactionsRoute
+  '/glossary': typeof GlossaryRoute
   '/hub': typeof HubRoute
   '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/characters'
     | '/factions'
+    | '/glossary'
     | '/hub'
     | '/import-review'
     | '/inbox'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/characters'
     | '/factions'
+    | '/glossary'
     | '/hub'
     | '/import-review'
     | '/inbox'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/characters'
     | '/factions'
+    | '/glossary'
     | '/hub'
     | '/import-review'
     | '/inbox'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CharactersRoute: typeof CharactersRoute
   FactionsRoute: typeof FactionsRoute
+  GlossaryRoute: typeof GlossaryRoute
   HubRoute: typeof HubRoute
   ImportReviewRoute: typeof ImportReviewRoute
   InboxRoute: typeof InboxRoute
@@ -211,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HubRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/glossary': {
+      id: '/glossary'
+      path: '/glossary'
+      fullPath: '/glossary'
+      preLoaderRoute: typeof GlossaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/factions': {
       id: '/factions'
       path: '/factions'
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CharactersRoute: CharactersRoute,
   FactionsRoute: FactionsRoute,
+  GlossaryRoute: GlossaryRoute,
   HubRoute: HubRoute,
   ImportReviewRoute: ImportReviewRoute,
   InboxRoute: InboxRoute,
