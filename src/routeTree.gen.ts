@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UploadsRouteImport } from './routes/uploads'
+import { Route as TimelineRouteImport } from './routes/timeline'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as InboxRouteImport } from './routes/inbox'
 import { Route as ImportReviewRouteImport } from './routes/import-review'
@@ -19,6 +20,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const UploadsRoute = UploadsRouteImport.update({
   id: '/uploads',
   path: '/uploads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TimelineRoute = TimelineRouteImport.update({
+  id: '/timeline',
+  path: '/timeline',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsRoute = ProjectsRouteImport.update({
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
   '/projects': typeof ProjectsRoute
+  '/timeline': typeof TimelineRoute
   '/uploads': typeof UploadsRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
   '/projects': typeof ProjectsRoute
+  '/timeline': typeof TimelineRoute
   '/uploads': typeof UploadsRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
   '/projects': typeof ProjectsRoute
+  '/timeline': typeof TimelineRoute
   '/uploads': typeof UploadsRoute
 }
 export interface FileRouteTypes {
@@ -80,9 +89,17 @@ export interface FileRouteTypes {
     | '/import-review'
     | '/inbox'
     | '/projects'
+    | '/timeline'
     | '/uploads'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/hub' | '/import-review' | '/inbox' | '/projects' | '/uploads'
+  to:
+    | '/'
+    | '/hub'
+    | '/import-review'
+    | '/inbox'
+    | '/projects'
+    | '/timeline'
+    | '/uploads'
   id:
     | '__root__'
     | '/'
@@ -90,6 +107,7 @@ export interface FileRouteTypes {
     | '/import-review'
     | '/inbox'
     | '/projects'
+    | '/timeline'
     | '/uploads'
   fileRoutesById: FileRoutesById
 }
@@ -99,6 +117,7 @@ export interface RootRouteChildren {
   ImportReviewRoute: typeof ImportReviewRoute
   InboxRoute: typeof InboxRoute
   ProjectsRoute: typeof ProjectsRoute
+  TimelineRoute: typeof TimelineRoute
   UploadsRoute: typeof UploadsRoute
 }
 
@@ -109,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/uploads'
       fullPath: '/uploads'
       preLoaderRoute: typeof UploadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/timeline': {
+      id: '/timeline'
+      path: '/timeline'
+      fullPath: '/timeline'
+      preLoaderRoute: typeof TimelineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects': {
@@ -155,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   ImportReviewRoute: ImportReviewRoute,
   InboxRoute: InboxRoute,
   ProjectsRoute: ProjectsRoute,
+  TimelineRoute: TimelineRoute,
   UploadsRoute: UploadsRoute,
 }
 export const routeTree = rootRouteImport
