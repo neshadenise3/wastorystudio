@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UploadsRouteImport } from './routes/uploads'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as InboxRouteImport } from './routes/inbox'
+import { Route as ImportReviewRouteImport } from './routes/import-review'
 import { Route as HubRouteImport } from './routes/hub'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -30,6 +31,11 @@ const InboxRoute = InboxRouteImport.update({
   path: '/inbox',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ImportReviewRoute = ImportReviewRouteImport.update({
+  id: '/import-review',
+  path: '/import-review',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HubRoute = HubRouteImport.update({
   id: '/hub',
   path: '/hub',
@@ -44,6 +50,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/hub': typeof HubRoute
+  '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
   '/projects': typeof ProjectsRoute
   '/uploads': typeof UploadsRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/hub': typeof HubRoute
+  '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
   '/projects': typeof ProjectsRoute
   '/uploads': typeof UploadsRoute
@@ -59,21 +67,36 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/hub': typeof HubRoute
+  '/import-review': typeof ImportReviewRoute
   '/inbox': typeof InboxRoute
   '/projects': typeof ProjectsRoute
   '/uploads': typeof UploadsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/hub' | '/inbox' | '/projects' | '/uploads'
+  fullPaths:
+    | '/'
+    | '/hub'
+    | '/import-review'
+    | '/inbox'
+    | '/projects'
+    | '/uploads'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/hub' | '/inbox' | '/projects' | '/uploads'
-  id: '__root__' | '/' | '/hub' | '/inbox' | '/projects' | '/uploads'
+  to: '/' | '/hub' | '/import-review' | '/inbox' | '/projects' | '/uploads'
+  id:
+    | '__root__'
+    | '/'
+    | '/hub'
+    | '/import-review'
+    | '/inbox'
+    | '/projects'
+    | '/uploads'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HubRoute: typeof HubRoute
+  ImportReviewRoute: typeof ImportReviewRoute
   InboxRoute: typeof InboxRoute
   ProjectsRoute: typeof ProjectsRoute
   UploadsRoute: typeof UploadsRoute
@@ -102,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InboxRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/import-review': {
+      id: '/import-review'
+      path: '/import-review'
+      fullPath: '/import-review'
+      preLoaderRoute: typeof ImportReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/hub': {
       id: '/hub'
       path: '/hub'
@@ -122,6 +152,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HubRoute: HubRoute,
+  ImportReviewRoute: ImportReviewRoute,
   InboxRoute: InboxRoute,
   ProjectsRoute: ProjectsRoute,
   UploadsRoute: UploadsRoute,
