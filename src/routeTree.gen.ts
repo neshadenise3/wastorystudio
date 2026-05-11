@@ -19,6 +19,7 @@ import { Route as HubRouteImport } from './routes/hub'
 import { Route as GlossaryRouteImport } from './routes/glossary'
 import { Route as FactionsRouteImport } from './routes/factions'
 import { Route as CharactersRouteImport } from './routes/characters'
+import { Route as CanonRouteImport } from './routes/canon'
 import { Route as IndexRouteImport } from './routes/index'
 
 const UploadsRoute = UploadsRouteImport.update({
@@ -71,6 +72,11 @@ const CharactersRoute = CharactersRouteImport.update({
   path: '/characters',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CanonRoute = CanonRouteImport.update({
+  id: '/canon',
+  path: '/canon',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -79,6 +85,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/canon': typeof CanonRoute
   '/characters': typeof CharactersRoute
   '/factions': typeof FactionsRoute
   '/glossary': typeof GlossaryRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/canon': typeof CanonRoute
   '/characters': typeof CharactersRoute
   '/factions': typeof FactionsRoute
   '/glossary': typeof GlossaryRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/canon': typeof CanonRoute
   '/characters': typeof CharactersRoute
   '/factions': typeof FactionsRoute
   '/glossary': typeof GlossaryRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/canon'
     | '/characters'
     | '/factions'
     | '/glossary'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/canon'
     | '/characters'
     | '/factions'
     | '/glossary'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/canon'
     | '/characters'
     | '/factions'
     | '/glossary'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CanonRoute: typeof CanonRoute
   CharactersRoute: typeof CharactersRoute
   FactionsRoute: typeof FactionsRoute
   GlossaryRoute: typeof GlossaryRoute
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CharactersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/canon': {
+      id: '/canon'
+      path: '/canon'
+      fullPath: '/canon'
+      preLoaderRoute: typeof CanonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -257,6 +277,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CanonRoute: CanonRoute,
   CharactersRoute: CharactersRoute,
   FactionsRoute: FactionsRoute,
   GlossaryRoute: GlossaryRoute,
