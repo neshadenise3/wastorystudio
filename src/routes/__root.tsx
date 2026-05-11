@@ -78,11 +78,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Writer's Assistant — Story Studio" },
       { name: "description", content: "Organize canon, timelines, worldbuilding, glossary, and pathways for your story." },
       { name: "author", content: "Writer's Assistant" },
-      { property: "og:title", content: "Writer's Assistant" },
-      { property: "og:description", content: "Your creative writing studio for canon, timelines, and narrative planning." },
+      { property: "og:title", content: "Writer's Assistant — Story Studio" },
+      { property: "og:description", content: "Organize canon, timelines, worldbuilding, glossary, and pathways for your story." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Writer's Assistant — Story Studio" },
+      { name: "twitter:description", content: "Organize canon, timelines, worldbuilding, glossary, and pathways for your story." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/vPcNZQcEgSMzpSzaAY4A6vTljTF3/social-images/social-1778473400634-237868E1-F7E9-4BBB-ABDA-462E0A6256AD.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/vPcNZQcEgSMzpSzaAY4A6vTljTF3/social-images/social-1778473400634-237868E1-F7E9-4BBB-ABDA-462E0A6256AD.webp" },
     ],
     links: [
       {
