@@ -56,6 +56,18 @@ export interface ChangeLog {
   itemType: string; itemName: string; timestamp: number; notes?: string;
 }
 
+export interface CustomCategory {
+  id: string; name: string; slug: string; iconKey: string;
+  section: "Cast & Lore" | "Story" | "Custom";
+  createdAt: number;
+}
+
+export interface LoreEntry {
+  id: string; projectId: string; categorySlug: string;
+  name: string; description: string; tags: string[];
+  status: CanonStatus; updatedAt: number;
+}
+
 interface State {
   theme: Theme;
   currentProjectId: string | null;
