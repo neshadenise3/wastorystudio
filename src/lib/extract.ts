@@ -26,10 +26,11 @@ export async function extractTextFromFile(file: File): Promise<string> {
 }
 
 async function extractDocx(file: File): Promise<string> {
-  const mammoth = await import("mammoth/mammoth.browser");
+  const mod: any = await import("mammoth/mammoth.browser");
+  const mammoth = mod.default ?? mod;
   const arrayBuffer = await file.arrayBuffer();
   const result = await mammoth.extractRawText({ arrayBuffer });
-  return result.value.trim() || `[Empty DOCX: ${file.name}]`;
+  return (result.value as string).trim() || `[Empty DOCX: ${file.name}]`;
 }
 
 async function extractPdf(file: File): Promise<string> {
