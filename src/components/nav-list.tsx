@@ -2,13 +2,24 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, FolderOpen, Home, Inbox, History, FileSearch,
   Clock, BookOpen, Globe, Library, Users, MapPin, Flag, Heart,
-  Sparkles, Sun, Wand2, BookMarked, GitBranch, AlertTriangle,
+  Sun, Wand2, BookMarked, GitBranch, AlertTriangle,
   RefreshCw, UsersRound, ListChecks, FileText, Download, Trash2,
-  Settings, Plus,
+  Settings, Plus, type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useStore } from "@/lib/store";
+import { getIcon } from "@/lib/icon-registry";
 
-export const navSections = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  badge?: React.ReactNode;
+  params?: Record<string, string>;
+};
+type NavSection = { label: string; items: NavItem[] };
+
+const baseSections: NavSection[] = [
   {
     label: "Workspace",
     items: [
@@ -66,26 +77,48 @@ export const navSections = [
       { to: "/settings", label: "Settings", icon: Settings },
     ],
   },
-] as const;
+];
+
+function useDynamicSections(): NavSection[] {
+  const customCategories = useStore((s) => s.customCategories);
+  if (customCategories.length === 0) return baseSections;
+
+  const customItems: NavItem[] = customCategories.map((c) => ({
+    to: "/category/$slug",
+    params: { slug: c.slug },
+    label: c.name,
+    icon: getIcon(c.iconKey),
+  }));
+
+  return [
+    ...baseSections,
+    { label: "Custom Categories", items: customItems },
+  ];
+}
 
 export function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const sections = useDynamicSections();
 
   return (
     <nav className="flex flex-col gap-5 px-3 py-4">
-      {navSections.map((section) => (
+      {sections.map((section) => (
         <div key={section.label}>
           <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
             {section.label}
           </p>
           <ul className="flex flex-col gap-0.5">
             {section.items.map((item) => {
-              const active = pathname === item.to;
+              const resolved = item.params?.slug
+                ? `/category/${item.params.slug}`
+                : item.to;
+              const active = pathname === resolved;
               const Icon = item.icon;
               return (
-                <li key={item.to}>
+                <li key={resolved}>
                   <Link
                     to={item.to}
+                    params={item.params as never}
                     onClick={onNavigate}
                     className={cn(
                       "group flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm font-medium transition-all",
@@ -96,7 +129,7 @@ export function NavList({ onNavigate }: { onNavigate?: () => void }) {
                   >
                     <Icon className={cn("h-4 w-4 shrink-0", active && "text-primary")} />
                     <span className="flex-1 truncate">{item.label}</span>
-                    {"badge" in item && item.badge && (
+                    {item.badge && (
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
                         {item.badge}
                       </span>

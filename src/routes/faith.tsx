@@ -1,17 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHeader, EmptyState } from "@/components/page-header";
-import { Construction } from "lucide-react";
+import { LoreList } from "@/components/lore-list";
 
 export const Route = createFileRoute("/faith")({
-  component: () => (
-    <div className="mx-auto max-w-5xl">
-      <PageHeader eyebrow="Cast & Lore" title="Faith" description="Religions, beliefs, and rituals." />
-      <EmptyState
-        icon={Construction}
-        title="Scaffolded and ready to grow"
-        description="This section is wired into the app. Add Lovable Cloud to enable persistence, sync, and collaboration."
-      />
-    </div>
-  ),
+  component: () => <LoreList slug="faith" title="Faith" eyebrow="Cast & Lore" description="Religions, beliefs, deities, and rituals." iconKey="Sun" />,
   head: () => ({ meta: [{ title: "Faith — Writer's Assistant" }] }),
 });

@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Inbox, Upload, FilePlus2, ArrowRight, Trash2 } from "lucide-react";
+import { Inbox, Upload, FilePlus2, ArrowRight, Trash2, Loader2 } from "lucide-react";
+import { extractTextFromFile } from "@/lib/extract";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/inbox")({
@@ -19,6 +20,7 @@ function InboxPage() {
   const project = useCurrentProject();
   const { inbox, addInbox, deleteInbox, updateInbox } = useStore();
   const [draft, setDraft] = useState({ title: "", content: "" });
+  const [extracting, setExtracting] = useState(false);
 
   if (!project) return null;
   const items = inbox.filter(i => i.projectId === project.id);
@@ -32,13 +34,24 @@ function InboxPage() {
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setExtracting(true);
+    let ok = 0;
     for (const f of files) {
-      const text = f.type.startsWith("text/") || f.name.match(/\.(md|txt|json|csv|rtf)$/i)
-        ? await f.text()
-        : `[Uploaded file: ${f.name} — extraction pending]`;
-      addInbox({ projectId: project.id, title: f.name, content: text, type: "upload", sourceFile: f.name, reviewed: false });
+      try {
+        const text = await extractTextFromFile(f);
+        addInbox({
+          projectId: project.id, title: f.name, content: text,
+          type: "upload", sourceFile: f.name, reviewed: false,
+        });
+        ok++;
+      } catch (err) {
+        console.error("Extraction failed for", f.name, err);
+        toast.error(`Couldn't extract ${f.name}`);
+      }
     }
-    if (files.length) toast.success(`${files.length} file(s) uploaded`);
+    setExtracting(false);
+    if (ok) toast.success(`${ok} file(s) extracted into Inbox`);
     e.target.value = "";
   };
 
@@ -63,11 +76,11 @@ function InboxPage() {
         <Card className="border-border/60 bg-card/60 backdrop-blur">
           <CardContent className="space-y-3 p-5">
             <div className="flex items-center gap-2 text-sm font-semibold"><Upload className="h-4 w-4 text-primary" /> Upload files</div>
-            <p className="text-xs text-muted-foreground">Supports MD, TXT, JSON, CSV, RTF, DOC, DOCX, PDF (text-extracted formats parsed inline; binary types stored for review).</p>
-            <label className="flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/60 bg-background/40 transition-colors hover:bg-background/60">
-              <Upload className="h-6 w-6 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Click to choose files</span>
-              <input type="file" multiple onChange={onUpload} className="hidden" />
+            <p className="text-xs text-muted-foreground">PDF, DOCX, MD, TXT, JSON, CSV, RTF — text is extracted automatically in your browser.</p>
+            <label className={`flex h-32 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/60 bg-background/40 transition-colors hover:bg-background/60 ${extracting ? "pointer-events-none opacity-60" : ""}`}>
+              {extracting ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : <Upload className="h-6 w-6 text-muted-foreground" />}
+              <span className="text-sm text-muted-foreground">{extracting ? "Extracting…" : "Click to choose files"}</span>
+              <input type="file" multiple accept=".pdf,.docx,.doc,.md,.txt,.json,.csv,.rtf,.html,.xml,.yaml,.yml,text/*" onChange={onUpload} className="hidden" disabled={extracting} />
             </label>
           </CardContent>
         </Card>

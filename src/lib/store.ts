@@ -56,6 +56,18 @@ export interface ChangeLog {
   itemType: string; itemName: string; timestamp: number; notes?: string;
 }
 
+export interface CustomCategory {
+  id: string; name: string; slug: string; iconKey: string;
+  section: "Cast & Lore" | "Story" | "Custom";
+  createdAt: number;
+}
+
+export interface LoreEntry {
+  id: string; projectId: string; categorySlug: string;
+  name: string; description: string; tags: string[];
+  status: CanonStatus; updatedAt: number;
+}
+
 interface State {
   theme: Theme;
   currentProjectId: string | null;
@@ -68,7 +80,16 @@ interface State {
   inbox: InboxItem[];
   pathways: PathwayCard[];
   changeLog: ChangeLog[];
+  customCategories: CustomCategory[];
+  loreEntries: LoreEntry[];
   trash: { id: string; type: string; name: string; data: any; deletedAt: number; projectId: string }[];
+
+  addCustomCategory: (c: Omit<CustomCategory, "id" | "createdAt">) => CustomCategory;
+  deleteCustomCategory: (id: string) => void;
+
+  addLoreEntry: (c: Omit<LoreEntry, "id" | "updatedAt">) => void;
+  updateLoreEntry: (id: string, c: Partial<LoreEntry>) => void;
+  deleteLoreEntry: (id: string) => void;
 
   setTheme: (t: Theme) => void;
   setCurrentProject: (id: string) => void;
@@ -222,7 +243,32 @@ export const useStore = create<State>()(
       inbox: [],
       pathways: [],
       changeLog: [],
+      customCategories: [],
+      loreEntries: [],
       trash: [],
+
+      addCustomCategory: (c) => {
+        const item: CustomCategory = { ...c, id: nanoid(), createdAt: now() };
+        set((s) => ({ customCategories: [...s.customCategories, item] }));
+        return item;
+      },
+      deleteCustomCategory: (id) => set((s) => ({
+        customCategories: s.customCategories.filter(x => x.id !== id),
+      })),
+
+      addLoreEntry: (c) => set((s) => ({
+        loreEntries: [...s.loreEntries, { ...c, id: nanoid(), updatedAt: now() }],
+      })),
+      updateLoreEntry: (id, c) => set((s) => ({
+        loreEntries: s.loreEntries.map(x => x.id === id ? { ...x, ...c, updatedAt: now() } : x),
+      })),
+      deleteLoreEntry: (id) => set((s) => {
+        const item = s.loreEntries.find(x => x.id === id); if (!item) return s;
+        return {
+          loreEntries: s.loreEntries.filter(x => x.id !== id),
+          trash: [...s.trash, { id: nanoid(), type: "lore", name: item.name, data: item, deletedAt: now(), projectId: item.projectId }],
+        };
+      }),
 
       setTheme: (theme) => set({ theme }),
       setCurrentProject: (id) => set({ currentProjectId: id }),
