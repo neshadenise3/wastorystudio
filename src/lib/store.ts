@@ -243,7 +243,32 @@ export const useStore = create<State>()(
       inbox: [],
       pathways: [],
       changeLog: [],
+      customCategories: [],
+      loreEntries: [],
       trash: [],
+
+      addCustomCategory: (c) => {
+        const item: CustomCategory = { ...c, id: nanoid(), createdAt: now() };
+        set((s) => ({ customCategories: [...s.customCategories, item] }));
+        return item;
+      },
+      deleteCustomCategory: (id) => set((s) => ({
+        customCategories: s.customCategories.filter(x => x.id !== id),
+      })),
+
+      addLoreEntry: (c) => set((s) => ({
+        loreEntries: [...s.loreEntries, { ...c, id: nanoid(), updatedAt: now() }],
+      })),
+      updateLoreEntry: (id, c) => set((s) => ({
+        loreEntries: s.loreEntries.map(x => x.id === id ? { ...x, ...c, updatedAt: now() } : x),
+      })),
+      deleteLoreEntry: (id) => set((s) => {
+        const item = s.loreEntries.find(x => x.id === id); if (!item) return s;
+        return {
+          loreEntries: s.loreEntries.filter(x => x.id !== id),
+          trash: [...s.trash, { id: nanoid(), type: "lore", name: item.name, data: item, deletedAt: now(), projectId: item.projectId }],
+        };
+      }),
 
       setTheme: (theme) => set({ theme }),
       setCurrentProject: (id) => set({ currentProjectId: id }),
