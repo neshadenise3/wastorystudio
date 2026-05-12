@@ -36,6 +36,7 @@ import { Route as ChangelogRouteImport } from './routes/changelog'
 import { Route as CanonLibraryRouteImport } from './routes/canon-library'
 import { Route as CanonRouteImport } from './routes/canon'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 
 const WorldbuildingRoute = WorldbuildingRouteImport.update({
   id: '/worldbuilding',
@@ -172,6 +173,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategorySlugRoute = CategorySlugRouteImport.update({
+  id: '/category/$slug',
+  path: '/category/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/trash': typeof TrashRoute
   '/uploads': typeof UploadsRoute
   '/worldbuilding': typeof WorldbuildingRoute
+  '/category/$slug': typeof CategorySlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/trash': typeof TrashRoute
   '/uploads': typeof UploadsRoute
   '/worldbuilding': typeof WorldbuildingRoute
+  '/category/$slug': typeof CategorySlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -260,6 +268,7 @@ export interface FileRoutesById {
   '/trash': typeof TrashRoute
   '/uploads': typeof UploadsRoute
   '/worldbuilding': typeof WorldbuildingRoute
+  '/category/$slug': typeof CategorySlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -291,6 +300,7 @@ export interface FileRouteTypes {
     | '/trash'
     | '/uploads'
     | '/worldbuilding'
+    | '/category/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/trash'
     | '/uploads'
     | '/worldbuilding'
+    | '/category/$slug'
   id:
     | '__root__'
     | '/'
@@ -349,6 +360,7 @@ export interface FileRouteTypes {
     | '/trash'
     | '/uploads'
     | '/worldbuilding'
+    | '/category/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -379,6 +391,7 @@ export interface RootRouteChildren {
   TrashRoute: typeof TrashRoute
   UploadsRoute: typeof UploadsRoute
   WorldbuildingRoute: typeof WorldbuildingRoute
+  CategorySlugRoute: typeof CategorySlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -572,6 +585,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/category/$slug': {
+      id: '/category/$slug'
+      path: '/category/$slug'
+      fullPath: '/category/$slug'
+      preLoaderRoute: typeof CategorySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -603,7 +623,18 @@ const rootRouteChildren: RootRouteChildren = {
   TrashRoute: TrashRoute,
   UploadsRoute: UploadsRoute,
   WorldbuildingRoute: WorldbuildingRoute,
+  CategorySlugRoute: CategorySlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
