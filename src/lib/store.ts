@@ -80,7 +80,16 @@ interface State {
   inbox: InboxItem[];
   pathways: PathwayCard[];
   changeLog: ChangeLog[];
+  customCategories: CustomCategory[];
+  loreEntries: LoreEntry[];
   trash: { id: string; type: string; name: string; data: any; deletedAt: number; projectId: string }[];
+
+  addCustomCategory: (c: Omit<CustomCategory, "id" | "createdAt">) => CustomCategory;
+  deleteCustomCategory: (id: string) => void;
+
+  addLoreEntry: (c: Omit<LoreEntry, "id" | "updatedAt">) => void;
+  updateLoreEntry: (id: string, c: Partial<LoreEntry>) => void;
+  deleteLoreEntry: (id: string) => void;
 
   setTheme: (t: Theme) => void;
   setCurrentProject: (id: string) => void;
