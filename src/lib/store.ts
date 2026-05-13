@@ -274,6 +274,7 @@ export const useStore = create<State>()(
       }),
 
       setTheme: (theme) => set({ theme }),
+      setFamilyFriendly: (familyFriendly) => set({ familyFriendly }),
       setCurrentProject: (id) => set({ currentProjectId: id }),
 
       addProject: (p) => {
