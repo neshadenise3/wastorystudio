@@ -93,6 +93,7 @@ interface State {
   deleteLoreEntry: (id: string) => void;
 
   setTheme: (t: Theme) => void;
+  setFamilyFriendly: (v: boolean) => void;
   setCurrentProject: (id: string) => void;
 
   addProject: (p: Omit<Project, "id" | "updatedAt" | "collaborators">) => string;
