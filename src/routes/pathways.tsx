@@ -8,9 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   GitBranch, Sparkles, Check, X, Pin, PinOff, Wand2, Target, ArrowRight,
-  HelpCircle, AlertTriangle,
+  HelpCircle, AlertTriangle, ShieldAlert, ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -19,25 +21,113 @@ export const Route = createFileRoute("/pathways")({
   head: () => ({ meta: [{ title: "Story Pathways — Writer's Assistant" }] }),
 });
 
-const TONES = ["Surprise me", "Hopeful", "Foreboding", "Whimsical", "Tense", "Bittersweet", "Triumphant", "Mysterious"];
-const HOOKS = [
-  "A familiar face returns with impossible knowledge",
-  "An ally reveals a hidden allegiance",
-  "The protagonist must choose between two beloved bonds",
-  "A long-buried truth reshapes the rules",
-  "A new realm opens beneath the old one",
-  "An enemy offers an unexpected alliance",
-  "The smallest object holds the greatest power",
-  "A debt the protagonist forgot is suddenly called in",
-  "A door closes that was thought to be permanent",
-  "A child's question undoes a careful lie",
+const TONES = ["Surprise me", "Hopeful", "Foreboding", "Whimsical", "Tense", "Bittersweet", "Triumphant", "Mysterious", "Sensual", "Brutal", "Dread", "Depraved"];
+
+type SceneType = {
+  value: string;
+  label: string;
+  mature?: boolean;
+  hooks: string[];
+  beats?: string[];
+};
+
+const SCENE_TYPES: SceneType[] = [
+  { value: "any", label: "Any scene", hooks: [] },
+  { value: "action", label: "Action / chase", hooks: [
+    "A pursuit splinters the group across the map",
+    "A planned ambush goes catastrophically sideways",
+    "A weapon fails at the worst possible moment",
+  ]},
+  { value: "dialogue", label: "Dialogue / confrontation", hooks: [
+    "A long-rehearsed accusation finally lands",
+    "Two allies say the unsayable in one room",
+    "A silence stretches longer than the words that follow",
+  ]},
+  { value: "mystery", label: "Mystery / reveal", hooks: [
+    "A clue contradicts the official story",
+    "An old letter rewrites a known timeline",
+    "The witness everyone trusted was never there",
+  ]},
+  { value: "emotional", label: "Emotional / quiet", hooks: [
+    "A small kindness undoes a long-held grudge",
+    "An apology arrives years too late",
+    "A character cries for the first time on the page",
+  ]},
+  { value: "worldbuilding", label: "Worldbuilding / lore", hooks: [
+    "A forgotten ritual is performed correctly by accident",
+    "A map proves the world is shaped wrong",
+    "An object's true name changes who can wield it",
+  ]},
+  // Mature scene types — only available when familyFriendly is OFF
+  { value: "romance", label: "Romance / intimate", mature: true, hooks: [
+    "A first kiss arrives in the worst possible setting",
+    "Restraint snaps after months of charged proximity",
+    "A confession is whispered through a closed door",
+  ]},
+  { value: "erotic", label: "Erotic (explicit)", mature: true, hooks: [
+    "Two characters cross a line they swore they wouldn't",
+    "A power dynamic shifts mid-encounter — consent is renegotiated on the page",
+    "A clandestine night reframes every conversation that follows",
+    "Desire wins over duty, and the cost is named out loud",
+  ], beats: [
+    "Tension builds through proximity and restraint",
+    "A choice is made — explicit, consensual, with stakes",
+    "Aftermath: vulnerability, complication, or unwelcome witness",
+  ]},
+  { value: "crime", label: "Crime / heist", mature: true, hooks: [
+    "A clean job leaves one body that wasn't on the plan",
+    "An informant flips during the meet",
+    "A trail of laundered money leads back to a friend",
+    "A heist crew discovers the mark already knew they were coming",
+  ], beats: [
+    "Plan briefed, contingencies named",
+    "Execution — one variable goes wrong",
+    "Cover-up or fallout reshapes loyalties",
+  ]},
+  { value: "drugs", label: "Drugs / addiction", mature: true, hooks: [
+    "A relapse is hidden from the person who would forgive it",
+    "A first hit changes how a character sees the protagonist",
+    "A dealer calls in a debt at the worst hour",
+    "Withdrawal cracks open a memory the character had buried",
+  ], beats: [
+    "The substance is offered, accepted, or refused",
+    "Behavior shifts — others begin to notice",
+    "A consequence lands: physical, social, or legal",
+  ]},
+  { value: "horror", label: "Horror / dread", mature: true, hooks: [
+    "Something in the room is breathing that shouldn't be",
+    "A familiar voice repeats a phrase it could not know",
+    "The doors lock from the outside, one by one",
+    "A child draws something they have never seen",
+  ], beats: [
+    "Wrongness is sensed before it's seen",
+    "The threat reveals itself — partially",
+    "Escape costs something that cannot be returned",
+  ]},
+  { value: "gore", label: "Gore / body horror", mature: true, hooks: [
+    "An injury reveals the body was never quite human",
+    "A wound refuses to close, and starts to speak",
+    "Flesh remembers what the mind tried to forget",
+    "A surgery is performed without anesthetic — and works",
+  ], beats: [
+    "The body fails in a specific, visceral way",
+    "Witnesses react — denial, action, or worse",
+    "What remains is no longer what it was",
+  ]},
+  { value: "violence", label: "Graphic violence", mature: true, hooks: [
+    "A retaliation goes three steps further than the insult",
+    "A duel ends in a way neither side survives intact",
+    "A protector becomes the thing the protected feared",
+  ]},
 ];
+
 const QUESTIONS = [
   "Whose loyalty is being tested?",
   "What rule of the world is about to break?",
   "What does the protagonist gain — and at what cost?",
   "Which secret can no longer stay buried?",
   "Who else benefits if this goes badly?",
+  "What line, once crossed, can't be uncrossed?",
 ];
 const RISKS = [
   "Conflicts with established tone",
@@ -45,7 +135,9 @@ const RISKS = [
   "Pacing — may stall the next chapter",
   "Shifts a character's voice",
   "Introduces a power not yet established",
+  "May need a content warning at chapter open",
 ];
+const FAMILY_TONES = new Set(["Surprise me", "Hopeful", "Foreboding", "Whimsical", "Tense", "Bittersweet", "Triumphant", "Mysterious"]);
 
 function pick<T>(arr: T[], n = 1, exclude: T[] = []): T[] {
   const pool = arr.filter(x => !exclude.includes(x));
