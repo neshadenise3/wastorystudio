@@ -235,6 +235,7 @@ export const useStore = create<State>()(
   persist(
     (set, get) => ({
       theme: "dark",
+      familyFriendly: true,
       currentProjectId: null,
       projects: [],
       characters: [],
