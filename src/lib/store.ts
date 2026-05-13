@@ -70,6 +70,7 @@ export interface LoreEntry {
 
 interface State {
   theme: Theme;
+  familyFriendly: boolean;
   currentProjectId: string | null;
   projects: Project[];
   characters: Character[];
@@ -92,6 +93,7 @@ interface State {
   deleteLoreEntry: (id: string) => void;
 
   setTheme: (t: Theme) => void;
+  setFamilyFriendly: (v: boolean) => void;
   setCurrentProject: (id: string) => void;
 
   addProject: (p: Omit<Project, "id" | "updatedAt" | "collaborators">) => string;
@@ -233,6 +235,7 @@ export const useStore = create<State>()(
   persist(
     (set, get) => ({
       theme: "dark",
+      familyFriendly: true,
       currentProjectId: null,
       projects: [],
       characters: [],
@@ -271,6 +274,7 @@ export const useStore = create<State>()(
       }),
 
       setTheme: (theme) => set({ theme }),
+      setFamilyFriendly: (familyFriendly) => set({ familyFriendly }),
       setCurrentProject: (id) => set({ currentProjectId: id }),
 
       addProject: (p) => {
