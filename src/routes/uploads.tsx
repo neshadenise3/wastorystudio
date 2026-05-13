@@ -50,14 +50,9 @@ function generateAdvice(items: InboxItem[]): string[] {
   );
 
   // Detect chapter ordering hints
-  const numbered = items
-    .map(i => ({ id: i.id, title: i.title, n: parseInt(i.title.match(/chapter\s*(\d+)/i)?.[1] ?? "", 10) }))
-    .filter(x => !isNaN(x.n));
-  if (numbered.length >= 2) {
-    const out = [...numbered].sort((a, b) => a.storyOrder(0)?.0 ?? 0 - 0);
-    void out;
-    const sortedByOrder = items.filter(i => /chapter\s*\d+/i.test(i.title));
-    const inOrder = sortedByOrder.every((it, idx, arr) => {
+  const chapterItems = items.filter(i => /chapter\s*\d+/i.test(i.title));
+  if (chapterItems.length >= 2) {
+    const inOrder = chapterItems.every((it, idx, arr) => {
       if (idx === 0) return true;
       const prev = parseInt(arr[idx - 1].title.match(/chapter\s*(\d+)/i)?.[1] ?? "", 10);
       const cur = parseInt(it.title.match(/chapter\s*(\d+)/i)?.[1] ?? "", 10);
