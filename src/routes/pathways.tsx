@@ -347,6 +347,29 @@ function PathwaysPage() {
             </p>
           </div>
 
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/40 p-3">
+            <div className="flex items-center gap-2">
+              {familyFriendly ? (
+                <ShieldCheck className="h-4 w-4 text-emerald-500" />
+              ) : (
+                <ShieldAlert className="h-4 w-4 text-amber-500" />
+              )}
+              <Label htmlFor="family-friendly" className="text-sm font-medium cursor-pointer">
+                Family-friendly mode
+              </Label>
+              <span className="text-xs text-muted-foreground">
+                {familyFriendly
+                  ? "Mature themes filtered out"
+                  : "Mature themes available — erotic, crime, drugs, horror, gore"}
+              </span>
+            </div>
+            <Switch
+              id="family-friendly"
+              checked={familyFriendly}
+              onCheckedChange={setFamilyFriendly}
+            />
+          </div>
+
           <div className="flex flex-wrap gap-2">
             <Select value={source} onValueChange={setSource}>
               <SelectTrigger className="h-10 w-auto min-w-[180px] rounded-xl">
@@ -358,12 +381,24 @@ function PathwaysPage() {
                 ))}
               </SelectContent>
             </Select>
+            <Select value={sceneType} onValueChange={setSceneType}>
+              <SelectTrigger className="h-10 w-auto min-w-[180px] rounded-xl">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {activeSceneTypes.map(s => (
+                  <SelectItem key={s.value} value={s.value}>
+                    {s.mature ? "⚠ " : ""}{s.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Select value={tone} onValueChange={setTone}>
               <SelectTrigger className="h-10 w-auto min-w-[150px] rounded-xl">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {TONES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                {activeTones.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
