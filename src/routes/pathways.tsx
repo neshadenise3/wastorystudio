@@ -215,41 +215,56 @@ function PathwaysPage() {
 
   const generate = () => {
     const used: string[] = [];
+    const scene = SCENE_TYPES.find(s => s.value === sceneType) ?? SCENE_TYPES[0];
+    const sceneHooks = scene.hooks.length > 0 ? scene.hooks : FAMILY_HOOKS;
+    const hookPool = familyFriendly
+      ? FAMILY_HOOKS
+      : Array.from(new Set([...sceneHooks, ...FAMILY_HOOKS]));
+    const tonePool = familyFriendly ? Array.from(FAMILY_TONES) : TONES;
+    const isMatureScene = !familyFriendly && !!scene.mature;
+
     for (let i = 0; i < 4; i++) {
-      const hook = pick(HOOKS, 1, used as string[])[0] ?? HOOKS[i % HOOKS.length];
+      const hook = pick(hookPool, 1, used as string[])[0] ?? hookPool[i % hookPool.length];
       used.push(hook);
+      const tonePoolNoSurprise = tonePool.filter(t => t !== "Surprise me");
       const cardTone = tone === "Surprise me"
-        ? TONES.filter(t => t !== "Surprise me")[Math.floor(Math.random() * (TONES.length - 1))]
+        ? tonePoolNoSurprise[Math.floor(Math.random() * Math.max(1, tonePoolNoSurprise.length))]
         : tone;
       const c1 = chars[Math.floor(Math.random() * Math.max(1, chars.length))] ?? "the protagonist";
       const c2 = pick(chars.filter(c => c !== c1), 1)[0] ?? "an ally";
       const loc = locs[Math.floor(Math.random() * Math.max(1, locs.length))] ?? "an unfamiliar place";
 
+      const sceneLabel = scene.value === "any" ? "" : ` · ${scene.label}`;
       let title: string;
       let pitch: string;
       if (mode === "endgoal" && steer.trim()) {
-        title = `Path toward: ${steer.trim().slice(0, 40)}`;
+        title = `Path toward: ${steer.trim().slice(0, 40)}${sceneLabel}`;
         pitch = `Working backward from "${steer.trim()}", ${c1} takes a ${cardTone.toLowerCase()} step that makes that ending more inevitable.`;
       } else if (mode === "steer" && steer.trim()) {
-        title = `${cardTone} steer at ${loc}`;
+        title = `${cardTone} steer at ${loc}${sceneLabel}`;
         pitch = `Steered by "${steer.trim()}". ${c1} encounters ${c2} in ${loc} — based on ${sourceLabel.toLowerCase()}.`;
       } else {
-        title = `${cardTone} turn at ${loc}`;
+        title = `${cardTone} turn at ${loc}${sceneLabel}`;
         pitch = `Following ${lastEvent}, ${c1} encounters ${c2} in ${loc}.`;
       }
 
-      const beats = [
-        `${c1} confronts ${c2}`,
-        `Hidden detail surfaces about ${loc}`,
-        `A choice changes the next chapter`,
-      ];
+      const beats = scene.beats && scene.beats.length > 0
+        ? scene.beats.map(b => b.replace(/\bcharacter\b/i, c1))
+        : [
+            `${c1} confronts ${c2}`,
+            `Hidden detail surfaces about ${loc}`,
+            `A choice changes the next chapter`,
+          ];
       const questions = pick(QUESTIONS, 2);
       const risks = pick(RISKS, 1);
+      if (isMatureScene) {
+        risks.push(`Mature content (${scene.label.toLowerCase()}) — add chapter content warning`);
+      }
 
       addPathway({
         projectId: project.id,
         title,
-        hook,
+        hook: isMatureScene ? `⚠ ${hook}` : hook,
         pitch,
         summary: [
           `${hook}.`,
@@ -265,7 +280,11 @@ function PathwaysPage() {
         status: "suggested",
       });
     }
-    toast.success("4 directions generated");
+    toast.success(
+      familyFriendly
+        ? "4 directions generated (family-friendly)"
+        : `4 ${scene.mature ? "mature " : ""}directions generated`
+    );
   };
 
   const continueFrom = (card: PathwayCard) => {
