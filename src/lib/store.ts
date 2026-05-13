@@ -70,6 +70,7 @@ export interface LoreEntry {
 
 interface State {
   theme: Theme;
+  familyFriendly: boolean;
   currentProjectId: string | null;
   projects: Project[];
   characters: Character[];
