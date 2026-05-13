@@ -154,12 +154,38 @@ function PathwaysPage() {
   const {
     pathways, addPathway, updatePathway, deletePathway,
     characters, locations, timeline, inbox, addTimelineEvent,
+    familyFriendly, setFamilyFriendly,
   } = useStore();
 
   const [source, setSource] = useState("latest");
   const [tone, setTone] = useState("Surprise me");
   const [mode, setMode] = useState<"brainstorm" | "steer" | "endgoal">("brainstorm");
   const [steer, setSteer] = useState("");
+  const [sceneType, setSceneType] = useState<string>("any");
+
+  // If family-friendly toggles back on while a mature scene type / tone is selected, reset.
+  const activeSceneTypes = SCENE_TYPES.filter(s => familyFriendly ? !s.mature : true);
+  const activeTones = familyFriendly ? TONES.filter(t => FAMILY_TONES.has(t)) : TONES;
+  if (familyFriendly && SCENE_TYPES.find(s => s.value === sceneType)?.mature) {
+    // schedule reset on next render via setState in effect-like way
+    setTimeout(() => setSceneType("any"), 0);
+  }
+  if (familyFriendly && !FAMILY_TONES.has(tone)) {
+    setTimeout(() => setTone("Surprise me"), 0);
+  }
+
+  const FAMILY_HOOKS = [
+    "A familiar face returns with impossible knowledge",
+    "An ally reveals a hidden allegiance",
+    "The protagonist must choose between two beloved bonds",
+    "A long-buried truth reshapes the rules",
+    "A new realm opens beneath the old one",
+    "An enemy offers an unexpected alliance",
+    "The smallest object holds the greatest power",
+    "A debt the protagonist forgot is suddenly called in",
+    "A door closes that was thought to be permanent",
+    "A child's question undoes a careful lie",
+  ];
 
   if (!project) return null;
 
