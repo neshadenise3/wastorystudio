@@ -90,10 +90,11 @@ function useDynamicSections(): NavSection[] {
     icon: getIcon(c.iconKey),
   }));
 
-  return [
-    ...baseSections,
-    { label: "Custom Categories", items: customItems },
-  ];
+  return baseSections.map((section) =>
+    section.label === "Cast & Lore"
+      ? { ...section, items: [...section.items, ...customItems] }
+      : section
+  );
 }
 
 export function NavList({ onNavigate }: { onNavigate?: () => void }) {
