@@ -82,6 +82,8 @@ interface State {
   pathways: PathwayCard[];
   changeLog: ChangeLog[];
   customCategories: CustomCategory[];
+  customCategoriesCollapsed: boolean;
+  toggleCustomCategoriesCollapsed: () => void;
   loreEntries: LoreEntry[];
   trash: { id: string; type: string; name: string; data: any; deletedAt: number; projectId: string }[];
 
@@ -247,6 +249,8 @@ export const useStore = create<State>()(
       pathways: [],
       changeLog: [],
       customCategories: [],
+      customCategoriesCollapsed: false,
+      toggleCustomCategoriesCollapsed: () => set((s) => ({ customCategoriesCollapsed: !s.customCategoriesCollapsed })),
       loreEntries: [],
       trash: [],
 

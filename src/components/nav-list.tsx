@@ -4,8 +4,9 @@ import {
   Clock, BookOpen, Globe, Library, Users, MapPin, Flag, Heart,
   Sun, Wand2, BookMarked, GitBranch, AlertTriangle,
   RefreshCw, UsersRound, ListChecks, FileText, Download, Trash2,
-  Settings, Plus, type LucideIcon,
+  Settings, Plus, ChevronDown, ChevronRight, type LucideIcon,
 } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { useStore } from "@/lib/store";
 import { getIcon } from "@/lib/icon-registry";
@@ -17,7 +18,7 @@ type NavItem = {
   badge?: React.ReactNode;
   params?: Record<string, string>;
 };
-type NavSection = { label: string; items: NavItem[] };
+type NavSection = { label: string; items: NavItem[]; customItems?: NavItem[] };
 
 const baseSections: NavSection[] = [
   {
@@ -92,7 +93,7 @@ function useDynamicSections(): NavSection[] {
 
   return baseSections.map((section) =>
     section.label === "Cast & Lore"
-      ? { ...section, items: [...section.items, ...customItems] }
+      ? { ...section, customItems }
       : section
   );
 }
@@ -100,6 +101,37 @@ function useDynamicSections(): NavSection[] {
 export function NavList({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const sections = useDynamicSections();
+  const collapsed = useStore((s) => s.customCategoriesCollapsed);
+  const toggleCollapsed = useStore((s) => s.toggleCustomCategoriesCollapsed);
+
+  const renderItem = (item: NavItem) => {
+    const resolved = item.params?.slug ? `/category/${item.params.slug}` : item.to;
+    const active = pathname === resolved;
+    const Icon = item.icon;
+    return (
+      <li key={resolved}>
+        <Link
+          to={item.to}
+          params={item.params as never}
+          onClick={onNavigate}
+          className={cn(
+            "group flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm font-medium transition-all",
+            active
+              ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-soft"
+              : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+          )}
+        >
+          <Icon className={cn("h-4 w-4 shrink-0", active && "text-primary")} />
+          <span className="flex-1 truncate">{item.label}</span>
+          {item.badge && (
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              {item.badge}
+            </span>
+          )}
+        </Link>
+      </li>
+    );
+  };
 
   return (
     <nav className="flex flex-col gap-5 px-3 py-4">
@@ -109,36 +141,23 @@ export function NavList({ onNavigate }: { onNavigate?: () => void }) {
             {section.label}
           </p>
           <ul className="flex flex-col gap-0.5">
-            {section.items.map((item) => {
-              const resolved = item.params?.slug
-                ? `/category/${item.params.slug}`
-                : item.to;
-              const active = pathname === resolved;
-              const Icon = item.icon;
-              return (
-                <li key={resolved}>
-                  <Link
-                    to={item.to}
-                    params={item.params as never}
-                    onClick={onNavigate}
-                    className={cn(
-                      "group flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm font-medium transition-all",
-                      active
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-soft"
-                        : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
-                    )}
+            {section.items.map(renderItem)}
+            {section.customItems && section.customItems.length > 0 && (
+              <>
+                <li>
+                  <button
+                    type="button"
+                    onClick={toggleCollapsed}
+                    className="mt-1 flex w-full items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+                    aria-expanded={!collapsed}
                   >
-                    <Icon className={cn("h-4 w-4 shrink-0", active && "text-primary")} />
-                    <span className="flex-1 truncate">{item.label}</span>
-                    {item.badge && (
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
+                    {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                    <span className="flex-1 text-left">Custom ({section.customItems.length})</span>
+                  </button>
                 </li>
-              );
-            })}
+                {!collapsed && section.customItems.map(renderItem)}
+              </>
+            )}
           </ul>
         </div>
       ))}
