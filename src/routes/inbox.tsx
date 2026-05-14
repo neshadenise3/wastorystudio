@@ -7,9 +7,39 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Inbox, Upload, FilePlus2, ArrowRight, Trash2, Loader2 } from "lucide-react";
+import { Inbox, Upload, FilePlus2, ArrowRight, Trash2, Loader2, Sparkles, RefreshCw } from "lucide-react";
 import { extractTextFromFile } from "@/lib/extract";
 import { toast } from "sonner";
+import { useRef } from "react";
+
+const SAMPLE_UPLOADS: { title: string; type: "paste" | "upload"; sourceFile?: string; content: string }[] = [
+  {
+    title: "Chapter 1 — Down the Rabbit Hole",
+    type: "upload",
+    sourceFile: "ch01-rabbit-hole.txt",
+    content:
+      "Alice was beginning to get very tired of sitting by her sister on the bank. Suddenly a White Rabbit with pink eyes ran close by her, muttering 'Oh dear! I shall be late!' Burning with curiosity, Alice ran across the field after it and was just in time to see it pop down a large rabbit-hole under the hedge. In another moment, down went Alice after it.",
+  },
+  {
+    title: "Chapter 2 — The Pool of Tears",
+    type: "upload",
+    sourceFile: "ch02-pool-of-tears.docx",
+    content:
+      "'Curiouser and curiouser!' cried Alice. She was now more than nine feet high, and at once took up the little golden key and hurried off to the garden door. Poor Alice! Tears streamed down until there was a large pool, reaching half down the hall.",
+  },
+  {
+    title: "Scene notes — Mad Tea Party",
+    type: "paste",
+    content:
+      "The Hatter and the March Hare are stuck at six o'clock forever. Tone: chaotic, riddling, slightly menacing. Alice grows impatient. The Dormouse keeps falling asleep mid-sentence. Use this scene to introduce the Queen's reach: a soldier card delivers a summons.",
+  },
+  {
+    title: "Worldbuilding — Queen's Court politics",
+    type: "paste",
+    content:
+      "The Queen of Hearts rules through fear of beheading, but executions rarely happen — the King quietly pardons most. The card soldiers are organized by suit: Spades dig, Clubs guard, Diamonds carry, Hearts attend the Queen.",
+  },
+];
 
 export const Route = createFileRoute("/inbox")({
   component: InboxPage,
