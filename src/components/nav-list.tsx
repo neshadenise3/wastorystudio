@@ -18,7 +18,7 @@ type NavItem = {
   badge?: React.ReactNode;
   params?: Record<string, string>;
 };
-type NavSection = { label: string; items: NavItem[] };
+type NavSection = { label: string; items: NavItem[]; customItems?: NavItem[] };
 
 const baseSections: NavSection[] = [
   {
