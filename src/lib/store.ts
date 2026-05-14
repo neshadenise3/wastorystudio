@@ -249,6 +249,8 @@ export const useStore = create<State>()(
       pathways: [],
       changeLog: [],
       customCategories: [],
+      customCategoriesCollapsed: false,
+      toggleCustomCategoriesCollapsed: () => set((s) => ({ customCategoriesCollapsed: !s.customCategoriesCollapsed })),
       loreEntries: [],
       trash: [],
 
