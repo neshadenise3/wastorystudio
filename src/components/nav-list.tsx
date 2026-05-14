@@ -6,7 +6,7 @@ import {
   RefreshCw, UsersRound, ListChecks, FileText, Download, Trash2,
   Settings, Plus, ChevronDown, ChevronRight, type LucideIcon,
 } from "lucide-react";
-import { useState } from "react";
+
 import { cn } from "@/lib/utils";
 import { useStore } from "@/lib/store";
 import { getIcon } from "@/lib/icon-registry";
