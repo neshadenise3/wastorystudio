@@ -82,6 +82,8 @@ interface State {
   pathways: PathwayCard[];
   changeLog: ChangeLog[];
   customCategories: CustomCategory[];
+  customCategoriesCollapsed: boolean;
+  toggleCustomCategoriesCollapsed: () => void;
   loreEntries: LoreEntry[];
   trash: { id: string; type: string; name: string; data: any; deletedAt: number; projectId: string }[];
 
