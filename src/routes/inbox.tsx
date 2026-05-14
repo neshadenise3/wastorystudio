@@ -160,10 +160,23 @@ function InboxPage() {
         </Card>
       </div>
 
+      <input
+        ref={reExtractInputRef}
+        type="file"
+        accept=".pdf,.docx,.doc,.md,.txt,.json,.csv,.rtf,.html,.xml,.yaml,.yml,text/*"
+        onChange={onReExtractFile}
+        className="hidden"
+      />
+
       <div>
-        <h2 className="mb-3 text-lg font-semibold">Inbox queue ({items.length})</h2>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">Inbox queue ({items.length})</h2>
+          <Button size="sm" variant="outline" onClick={loadSamples} className="rounded-xl">
+            <Sparkles className="h-3.5 w-3.5" />Load sample uploads
+          </Button>
+        </div>
         {items.length === 0 ? (
-          <EmptyState icon={Inbox} title="Inbox empty" description="Paste or upload story material to get started." />
+          <EmptyState icon={Inbox} title="Inbox empty" description="Paste or upload story material — or load samples to explore." />
         ) : (
           <div className="space-y-3">
             {items.map(item => (
@@ -174,6 +187,9 @@ function InboxPage() {
                       <h3 className="truncate font-semibold">{item.title}</h3>
                       <Badge variant={item.reviewed ? "default" : "secondary"} className="text-[10px]">{item.reviewed ? "Reviewed" : "Pending"}</Badge>
                       <Badge variant="outline" className="text-[10px]">{item.type}</Badge>
+                      {item.sourceFile && (
+                        <Badge variant="outline" className="text-[10px] text-muted-foreground">{item.sourceFile}</Badge>
+                      )}
                     </div>
                     <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{item.content}</p>
                     <p className="mt-1 text-xs text-muted-foreground">Upload #{item.uploadOrder + 1} · {new Date(item.createdAt).toLocaleString()}</p>
@@ -181,6 +197,18 @@ function InboxPage() {
                   <div className="flex shrink-0 flex-col gap-1.5">
                     <Button size="sm" variant="outline" onClick={() => updateInbox(item.id, { reviewed: !item.reviewed })}>
                       <ArrowRight className="h-3.5 w-3.5" />Review
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => triggerReExtract(item.id)}
+                      disabled={reExtractingId === item.id}
+                      title="Pick the source file again to re-run extraction"
+                    >
+                      {reExtractingId === item.id
+                        ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        : <RefreshCw className="h-3.5 w-3.5" />}
+                      Re-extract
                     </Button>
                     <Button size="sm" variant="ghost" onClick={() => deleteInbox(item.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                   </div>
