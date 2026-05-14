@@ -51,6 +51,9 @@ function InboxPage() {
   const { inbox, addInbox, deleteInbox, updateInbox } = useStore();
   const [draft, setDraft] = useState({ title: "", content: "" });
   const [extracting, setExtracting] = useState(false);
+  const [reExtractingId, setReExtractingId] = useState<string | null>(null);
+  const reExtractInputRef = useRef<HTMLInputElement | null>(null);
+  const reExtractTargetId = useRef<string | null>(null);
 
   if (!project) return null;
   const items = inbox.filter(i => i.projectId === project.id);
@@ -60,6 +63,47 @@ function InboxPage() {
     addInbox({ projectId: project.id, title: draft.title, content: draft.content, type: "paste", reviewed: false });
     setDraft({ title: "", content: "" });
     toast.success("Sent to Inbox");
+  };
+
+  const loadSamples = () => {
+    let added = 0;
+    for (const s of SAMPLE_UPLOADS) {
+      if (items.some(i => i.title === s.title)) continue;
+      addInbox({
+        projectId: project.id,
+        title: s.title,
+        content: s.content,
+        type: s.type,
+        sourceFile: s.sourceFile,
+        reviewed: false,
+      });
+      added++;
+    }
+    toast.success(added ? `Added ${added} sample source${added === 1 ? "" : "s"}` : "Samples already loaded");
+  };
+
+  const triggerReExtract = (id: string) => {
+    reExtractTargetId.current = id;
+    reExtractInputRef.current?.click();
+  };
+
+  const onReExtractFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    const id = reExtractTargetId.current;
+    e.target.value = "";
+    reExtractTargetId.current = null;
+    if (!file || !id) return;
+    setReExtractingId(id);
+    try {
+      const text = await extractTextFromFile(file);
+      updateInbox(id, { content: text, sourceFile: file.name, type: "upload" });
+      toast.success(`Re-extracted ${file.name}`);
+    } catch (err) {
+      console.error(err);
+      toast.error(`Couldn't re-extract ${file.name}`);
+    } finally {
+      setReExtractingId(null);
+    }
   };
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
